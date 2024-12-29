@@ -9,7 +9,8 @@ import SwiftUI
 
 struct SignUpView: View {
     @ObservedObject var viewModel: SignUpViewModel
-    
+    @EnvironmentObject var router: Router
+
     init(viewModel: SignUpViewModel) {
         self.viewModel = viewModel
     }
@@ -22,12 +23,12 @@ struct SignUpView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(height: 200)
-                    
+
                     Text("Let's get started")
                         .fontWeight(.semibold)
                         .font(.system(size: 24))
                         .foregroundColor(Color.blueAccent)
-                    
+
                     TextField("", text: $viewModel.username, prompt: Text("Username")
                         .foregroundColor(.grayAccent)
                     )
@@ -65,7 +66,7 @@ struct SignUpView: View {
                     .autocapitalization(.none)
                     .padding(.horizontal, 18)
                     .frame(height: 50)
-                    
+
                     SecureField("", text: $viewModel.password, prompt: Text("Password")
                         .foregroundColor(.grayAccent)
                     )
@@ -76,7 +77,7 @@ struct SignUpView: View {
                     .autocapitalization(.none)
                     .padding(.horizontal, 18)
                     .frame(height: 50)
-                    
+
                     if !viewModel.error.isEmpty {
                         Text(viewModel.error)
                             .fontWeight(.semibold)
@@ -103,13 +104,13 @@ struct SignUpView: View {
                                 .padding(.horizontal, 18)
                         }
                     }
-                    
+
                     HStack {
                         Text("Already have an account?")
                             .fontWeight(.semibold)
                             .font(.system(size: 16))
                             .foregroundStyle(.grayAccent)
-                        
+
                         Button("Login") {
                             viewModel.loginTapped.send()
                         }
@@ -118,15 +119,13 @@ struct SignUpView: View {
                         .foregroundStyle(.blueAccent)
                     }
                 }
-
-                NavigationLink(
-                    destination: LoginView(viewModel: LoginViewModel(username: viewModel.username, password: viewModel.password)),
-                    isActive: $viewModel.showLogin
-                ) {
-                    EmptyView()
-                }
             }
             .background(.darkAccent)
+        }
+        .onReceive(viewModel.$showLogin) { showLogin in
+            if showLogin {
+                router.navigate(to: .login(username: viewModel.username, password: viewModel.password))
+            }
         }
         .navigationBarHidden(true)
     }

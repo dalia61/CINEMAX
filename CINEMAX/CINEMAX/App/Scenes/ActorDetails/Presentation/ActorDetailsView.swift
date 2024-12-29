@@ -9,8 +9,8 @@ import SwiftUI
 
 struct ActorDetailsView: View {
     @ObservedObject var viewModel: ActorDetailsViewModel
-    @Environment(\.dismiss) private var dismiss
-    
+    @EnvironmentObject var router: Router
+
     init(viewModel: ActorDetailsViewModel) {
         self.viewModel = viewModel
     }
@@ -20,7 +20,7 @@ struct ActorDetailsView: View {
             NavigationBarView(
                 title: viewModel.actorDetails?.name ?? "",
                 onDismiss: {
-                    dismiss()
+                    router.navigateBack()
                 }
             )
             .padding(.bottom, 16)
@@ -162,6 +162,7 @@ struct ActorDetailsView: View {
                 RelatedMoviesSectionView(
                     movies: viewModel.relatedMovies,
                     onMovieSelected: { movie in
+                        router.navigate(to: .movieDetails(movieID: movie.id ?? 0))
                     })
             }
         }
