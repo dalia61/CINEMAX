@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 class HomeViewModel: ObservableObject {
     @Published var upcomingViewState: ViewState = .loading
@@ -87,7 +88,6 @@ class HomeViewModel: ObservableObject {
                 logout()
             }
             .store(in: &cancellables)
-
     }
     
     private func favoriteTapped(movieIndex: Int) {

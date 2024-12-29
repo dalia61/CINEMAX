@@ -23,13 +23,17 @@ class LoginViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
 
     init(
-        username: String = "",
-        password: String = "",
+        username: String? = "",
+        password: String? = "",
         loginUseCase: LoginUseCaseProtocol = LoginUseCase(),
         saveSessionUseCase: SaveSessionUseCaseProtocol = SaveSessionUseCase()
     ) {
         self.loginUseCase = loginUseCase
         self.saveSessionUseCase = saveSessionUseCase
+        
+        self.username = username ?? ""
+        self.password = password ?? ""
+
         setupObservers()
     }
 

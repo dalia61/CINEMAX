@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct MoviesListView: View {
-    @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: MoviesListViewModel
+    @EnvironmentObject var router: Router
 
     init(viewModel: MoviesListViewModel) {
         self.viewModel = viewModel
@@ -22,7 +22,7 @@ struct MoviesListView: View {
                     NavigationBarView(
                         title: "Most Popular",
                         onDismiss: {
-                            dismiss()
+                            router.navigateBack()
                         }
                     )
                     
@@ -87,9 +87,9 @@ struct MoviesListView: View {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(spacing: 16) {
                 ForEach(viewModel.movies, id: \.id) { movie in
-                    NavigationLink(destination: {
+                    Button(action: {
                         if let movieID = movie.id {
-                            MovieDetailsView(viewModel: MovieDetailsViewModel(movieID: movieID))
+                            router.navigate(to: .movieDetails(movieID: movieID))
                         }
                     }) {
                         MovieCardView(movie: movie, didFavoriteTap: {

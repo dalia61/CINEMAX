@@ -9,9 +9,8 @@ import SwiftUI
 
 struct SearchView: View {
     @ObservedObject var viewModel: SearchViewModel
-    @State private var isActorDetailsViewPresented = false
-    @State private var selectedActorID: Int?
-    
+    @EnvironmentObject var router: Router
+
     init(viewModel: SearchViewModel) {
         self.viewModel = viewModel
     }
@@ -38,13 +37,6 @@ struct SearchView: View {
                             makeMoviesListView()
                         }
                         .padding(.top, 8)
-                        
-                        NavigationLink(
-                            destination: ActorDetailsView(viewModel: ActorDetailsViewModel(actorID: selectedActorID ?? 0)),
-                            isActive: $isActorDetailsViewPresented
-                        ) {
-                            EmptyView()
-                        }
                     }
                     Spacer()
                 }
@@ -79,9 +71,9 @@ struct SearchView: View {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(spacing: 16) {
                 ForEach(viewModel.movies, id: \.id) { movie in
-                    NavigationLink(destination: {
+                    Button(action: {
                         if let movieID = movie.id {
-                            MovieDetailsView(viewModel: MovieDetailsViewModel(movieID: movieID))
+                            router.navigate(to: .movieDetails(movieID: movieID))
                         }
                     }) {
                         MovieCardView(movie: movie, didFavoriteTap: {
@@ -103,8 +95,7 @@ struct SearchView: View {
             ActorSectionView(
                 actors: viewModel.movieCast,
                 onActorSelected: { actor in
-                    selectedActorID = actor.id
-                    isActorDetailsViewPresented = true
+                    router.navigate(to: .actorDetails(actorID: actor.id ?? 0))
                 }
             )
         }
