@@ -5,40 +5,19 @@
 //  Created by Dalia Hamada on 11/12/2024.
 //
 
-import Foundation
+import Combine
 
 protocol RemoteMoviesDataSourceProtocol {
-    func fetchUpcoming(completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void)
-    func fetchMostPopular(completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void)
-    func fetchActors(completion: @escaping (Result<ActorsListResponse, NetworkError>) -> Void)
-    func searchMovie(
-        movieName: String,
-        completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void
-    )
-    func searchActor(
-        actorName: String,
-        completion: @escaping (Result<ActorsListResponse, NetworkError>) -> Void
-    )
-    func fetchMovieDetails(
-        movieID: Int,
-        completion: @escaping (Result<MovieDetails, NetworkError>) -> Void
-    )
-    func fetchMovieCast(
-        movieID: Int,
-        completion: @escaping (Result<MovieCastResponse, NetworkError>) -> Void
-    )
-    func fetchRelatedMovies(
-        movieID: Int,
-        completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void
-    )
-    func fetchActorRelatedMovies(
-        actorID: Int,
-        completion: @escaping (Result<ActorRelatedMoviesResponse, NetworkError>) -> Void
-    )
-    func fetchActorDetails(
-        actorID: Int,
-        completion: @escaping (Result<ActorDetails, NetworkError>) -> Void
-    )
+    func fetchUpcoming() -> AnyPublisher<MoviesListResponse, NetworkError>
+    func fetchMostPopular() -> AnyPublisher<MoviesListResponse, NetworkError>
+    func fetchActors() -> AnyPublisher<ActorsListResponse, NetworkError>
+    func searchMovie(movieName: String) -> AnyPublisher<MoviesListResponse, NetworkError>
+    func searchActor(actorName: String) -> AnyPublisher<ActorsListResponse, NetworkError>
+    func fetchMovieDetails(movieID: Int) -> AnyPublisher<MovieDetails, NetworkError>
+    func fetchMovieCast(movieID: Int) -> AnyPublisher<MovieCastResponse, NetworkError>
+    func fetchRelatedMovies(movieID: Int) -> AnyPublisher<MoviesListResponse, NetworkError>
+    func fetchActorRelatedMovies(actorID: Int) -> AnyPublisher<ActorRelatedMoviesResponse, NetworkError>
+    func fetchActorDetails(actorID: Int) -> AnyPublisher<ActorDetails, NetworkError>
 }
 
 struct RemoteMoviesDataSource: RemoteMoviesDataSourceProtocol {
@@ -48,91 +27,53 @@ struct RemoteMoviesDataSource: RemoteMoviesDataSourceProtocol {
         self.networkingManger = networkingManger
     }
 
-    func fetchUpcoming(completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void) {
+    func fetchUpcoming() -> AnyPublisher<MoviesListResponse, NetworkError> {
         let endpoint = MoviesEndpoint.upcoming
-        networkingManger.request(
-            using: endpoint,
-            completion: completion
-        )
+        return networkingManger.request(using: endpoint)
     }
 
-    func fetchMostPopular(completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void) {
+    func fetchMostPopular() -> AnyPublisher<MoviesListResponse, NetworkError> {
         let endpoint = MoviesEndpoint.mostPopular
-        networkingManger.request(
-            using: endpoint,
-            completion: completion
-        )
+        return networkingManger.request(using: endpoint)
     }
 
-    func fetchActors(completion: @escaping (Result<ActorsListResponse, NetworkError>) -> Void) {
+    func fetchActors() -> AnyPublisher<ActorsListResponse, NetworkError> {
         let endpoint = MoviesEndpoint.allActors
-        networkingManger.request(
-            using: endpoint,
-            completion: completion
-        )
+        return networkingManger.request(using: endpoint)
     }
 
-    func searchMovie(
-        movieName: String,
-        completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void
-    ) {
+    func searchMovie(movieName: String) -> AnyPublisher<MoviesListResponse, NetworkError> {
         let endpoint = MoviesEndpoint.searchMovies(movieName: movieName)
-        networkingManger.request(
-            using: endpoint,
-            completion: completion
-        )
+        return networkingManger.request(using: endpoint)
     }
     
-    func searchActor(
-        actorName: String,
-        completion: @escaping (Result<ActorsListResponse, NetworkError>) -> Void
-    ) {
-            let endpoint = MoviesEndpoint.searchActors(actorName: actorName)
-            networkingManger.request(
-                using: endpoint,
-                completion: completion
-            )
+    func searchActor(actorName: String) -> AnyPublisher<ActorsListResponse, NetworkError> {
+        let endpoint = MoviesEndpoint.searchActors(actorName: actorName)
+        return networkingManger.request(using: endpoint)
     }
 
-    func fetchMovieDetails(
-        movieID: Int,
-        completion: @escaping (Result<MovieDetails, NetworkError>) -> Void
-    ) {
+    func fetchMovieDetails(movieID: Int) -> AnyPublisher<MovieDetails, NetworkError> {
         let endpoint = MoviesEndpoint.movieDetails(movieID: movieID)
-        networkingManger.request(
-            using: endpoint,
-            completion: completion
-        )
+        return networkingManger.request(using: endpoint)
     }
 
-    func fetchMovieCast(movieID: Int, completion: @escaping (Result<MovieCastResponse, NetworkError>) -> Void) {
+    func fetchMovieCast(movieID: Int) -> AnyPublisher<MovieCastResponse, NetworkError> {
         let endpoint = MoviesEndpoint.movieCast(movieID: movieID)
-        networkingManger.request(
-            using: endpoint,
-            completion: completion
-        )
+        return networkingManger.request(using: endpoint)
     }
 
-    func fetchRelatedMovies(movieID: Int, completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void) {
+    func fetchRelatedMovies(movieID: Int) -> AnyPublisher<MoviesListResponse, NetworkError> {
         let endpoint = MoviesEndpoint.relatedMovies(movieID: movieID)
-        networkingManger.request(
-            using: endpoint,
-            completion: completion
-        )
+        return networkingManger.request(using: endpoint)
     }
-    func fetchActorRelatedMovies(actorID: Int, completion: @escaping (Result<ActorRelatedMoviesResponse, NetworkError>) -> Void) {
+
+    func fetchActorRelatedMovies(actorID: Int) -> AnyPublisher<ActorRelatedMoviesResponse, NetworkError> {
         let endpoint = MoviesEndpoint.ActorRelatedMovies(actorID: actorID)
-        networkingManger.request(
-            using: endpoint,
-            completion: completion
-        )
+        return networkingManger.request(using: endpoint)
     }
     
-    func fetchActorDetails(actorID: Int, completion: @escaping (Result<ActorDetails, NetworkError>) -> Void) {
+    func fetchActorDetails(actorID: Int) -> AnyPublisher<ActorDetails, NetworkError> {
         let endpoint = MoviesEndpoint.actordetails(actorID: actorID)
-        networkingManger.request(
-            using: endpoint,
-            completion: completion
-        )
+        return networkingManger.request(using: endpoint)
     }
 }

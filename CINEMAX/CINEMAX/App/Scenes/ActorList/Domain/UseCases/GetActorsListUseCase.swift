@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import Combine
 
 protocol GetActorsListUseCaseProtocol {
-    func execute(completion: @escaping (Result<ActorsListResponse, NetworkError>) -> Void)
+    func execute(
+    ) -> AnyPublisher<ActorsListResponse, NetworkError>
 }
 
 final class GetActorsListUseCase: GetActorsListUseCaseProtocol {
@@ -18,7 +20,7 @@ final class GetActorsListUseCase: GetActorsListUseCaseProtocol {
         self.moviesRepo = moviesRepo
     }
 
-    func execute(completion: @escaping (Result<ActorsListResponse, NetworkError>) -> Void) {
-        moviesRepo.fetchAllActors(completion: completion)
+    func execute() -> AnyPublisher<ActorsListResponse, NetworkError> {
+        moviesRepo.fetchAllActors()
     }
 }

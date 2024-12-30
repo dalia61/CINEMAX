@@ -87,24 +87,26 @@ class MoviesListViewModel: ObservableObject {
     private func getMostPopularMovies() {
         state = .loading
 
-        mostPopularMoviesUseCase.execute { result in
-            switch result {
-            case .success(let response):
+        mostPopularMoviesUseCase.execute()
+            .sink(receiveCompletion: { completion in
+                if case .failure = completion {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+
+                        state = .failed
+                    }
+                }
+            }, receiveValue: { [weak self] response in
+                guard let self else { return }
+                
                 DispatchQueue.main.async { [weak self] in
                     guard let self else { return }
 
                     movies = mapMoviesResponse(response: response)
                     state = movies.isEmpty ? .empty : .loaded
                 }
-
-            case .failure:
-                DispatchQueue.main.async { [weak self] in
-                    guard let self else { return }
-
-                    state = .failed
-                }
-            }
-        }
+            })
+            .store(in: &cancellables)
     }
     
     private func mapMoviesResponse(response: MoviesListResponse) -> [Movie] {

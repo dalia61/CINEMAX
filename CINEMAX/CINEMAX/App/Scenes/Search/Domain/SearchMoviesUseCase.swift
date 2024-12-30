@@ -6,12 +6,12 @@
 //
 
 import Foundation
+import Combine
 
 protocol SearchMoviesUseCaseProtocol {
     func execute(
-        movieName: String,
-        completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void
-    )
+        movieName: String
+    ) -> AnyPublisher<MoviesListResponse, NetworkError>
 }
 
 struct SearchMoviesUseCase: SearchMoviesUseCaseProtocol {
@@ -22,9 +22,8 @@ struct SearchMoviesUseCase: SearchMoviesUseCaseProtocol {
     }
 
     func execute(
-        movieName: String,
-        completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void
-    ) {
-        moviesRepo.searchMovie(movieName: movieName, completion: completion)
+        movieName: String
+    ) -> AnyPublisher<MoviesListResponse, NetworkError> {
+        moviesRepo.searchMovie(movieName: movieName)
     }
 }

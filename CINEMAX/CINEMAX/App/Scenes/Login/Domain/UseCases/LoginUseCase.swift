@@ -6,13 +6,13 @@
 //
 
 import Foundation
+import Combine
 
 protocol LoginUseCaseProtocol {
     func execute(
         username: String,
-        password: String,
-        completion: @escaping (Result<LoginResponse, NetworkError>) -> Void
-    )
+        password: String
+    ) -> AnyPublisher<LoginResponse, NetworkError>
 }
 
 final class LoginUseCase: LoginUseCaseProtocol {
@@ -24,9 +24,8 @@ final class LoginUseCase: LoginUseCaseProtocol {
 
     func execute(
         username: String,
-        password: String,
-        completion: @escaping (Result<LoginResponse, NetworkError>) -> Void
-    ) {
-        authRepo.login(userName: username, password: password, completion: completion)
+        password: String
+    ) -> AnyPublisher<LoginResponse, NetworkError> {
+        authRepo.login(userName: username, password: password)
     }
 }

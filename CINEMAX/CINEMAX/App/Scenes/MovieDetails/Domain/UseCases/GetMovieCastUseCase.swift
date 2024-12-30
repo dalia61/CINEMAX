@@ -6,12 +6,12 @@
 //
 
 import Foundation
+import Combine
 
 protocol GetMovieCastUseCaseProtocol {
     func execute(
-        movieId: Int,
-        completion: @escaping (Result<MovieCastResponse, NetworkError>) -> Void
-    )
+        movieId: Int
+    ) -> AnyPublisher<MovieCastResponse, NetworkError>
 }
 
 struct GetMovieCastUseCase: GetMovieCastUseCaseProtocol {
@@ -22,9 +22,9 @@ struct GetMovieCastUseCase: GetMovieCastUseCaseProtocol {
     }
     
     func execute(
-        movieId: Int,
-        completion: @escaping (Result<MovieCastResponse, NetworkError>) -> Void
-    ) {
-        moviesRepo.fetchMovieCast(movieID: movieId, completion: completion)
+        movieId: Int
+    ) -> AnyPublisher<MovieCastResponse, NetworkError>
+    {
+        moviesRepo.fetchMovieCast(movieID: movieId)
     }
 }

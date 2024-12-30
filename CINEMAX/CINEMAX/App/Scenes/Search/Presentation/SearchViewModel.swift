@@ -84,24 +84,26 @@ class SearchViewModel: ObservableObject {
         if !actorName.isEmpty {
             actorsState = .loading
 
-            searchActorsUseCase.execute(actorName: actorName) { result in
-                switch result {
-                case .success(let response):
+            searchActorsUseCase.execute(actorName: actorName)
+                .sink(receiveCompletion: { completion in
+                    if case .failure = completion {
+                        DispatchQueue.main.async { [weak self] in
+                            guard let self else { return }
+
+                            actorsState = .failed
+                        }
+                    }
+                }, receiveValue: { [weak self] response in
+                    guard let self else { return }
+                    
                     DispatchQueue.main.async { [weak self] in
                         guard let self else { return }
 
                         movieCast = mapActorsResponse(response: response)
                         actorsState = movieCast.isEmpty ? .empty : .loaded
                     }
-
-                case .failure(let error):
-                    DispatchQueue.main.async { [weak self] in
-                        guard let self else { return }
-
-                        actorsState = .failed
-                    }
-                }
-            }
+                })
+                .store(in: &cancellables)
         } else {
             actorsState = .empty
         }
@@ -113,24 +115,26 @@ class SearchViewModel: ObservableObject {
         if !movieName.isEmpty {
             moviesState = .loading
 
-            searchMoviesUseCase.execute(movieName: movieName) { result in
-                switch result {
-                case .success(let response):
+            searchMoviesUseCase.execute(movieName: movieName)
+                .sink(receiveCompletion: { completion in
+                    if case .failure = completion {
+                        DispatchQueue.main.async { [weak self] in
+                            guard let self else { return }
+
+                            moviesState = .failed
+                        }
+                    }
+                }, receiveValue: { [weak self] response in
+                    guard let self else { return }
+                    
                     DispatchQueue.main.async { [weak self] in
                         guard let self else { return }
 
                         movies = mapMoviesResponse(response: response)
                         moviesState = movies.isEmpty ? .empty : .loaded
                     }
-
-                case .failure:
-                    DispatchQueue.main.async { [weak self] in
-                        guard let self else { return }
-
-                        moviesState = .failed
-                    }
-                }
-            }
+                })
+                .store(in: &cancellables)
         } else {
             moviesState = .empty
         }

@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import Combine
 
 protocol GetUpcomingMoviesUseCaseProtocol {
-    func execute(completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void)
+    func execute() -> AnyPublisher<MoviesListResponse, NetworkError>
+
 }
 
 struct GetUpcomingMoviesUseCase: GetUpcomingMoviesUseCaseProtocol {
@@ -18,7 +20,7 @@ struct GetUpcomingMoviesUseCase: GetUpcomingMoviesUseCaseProtocol {
         self.moviesRepo = moviesRepo
     }
 
-    func execute(completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void) {
-        moviesRepo.fetchUpcoming(completion: completion)
+    func execute() -> AnyPublisher<MoviesListResponse, NetworkError> {
+        moviesRepo.fetchUpcoming()
     }
 }

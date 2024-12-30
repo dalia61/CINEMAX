@@ -6,18 +6,19 @@
 //
 
 import Foundation
+import Combine
 
 protocol MoviesRepoProtocol {
-    func fetchUpcoming(completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void)
-    func fetchMostPopular(completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void)
-    func fetchAllActors(completion: @escaping (Result<ActorsListResponse, NetworkError>) -> Void)
-    func searchMovie(movieName: String,completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void)
-    func searchActor(actorName: String,completion: @escaping (Result<ActorsListResponse, NetworkError>) -> Void)
-    func fetchMovieDetails(movieID: Int,completion: @escaping (Result<MovieDetails, NetworkError>) -> Void)
-    func fetchMovieCast(movieID: Int,completion: @escaping (Result<MovieCastResponse, NetworkError>) -> Void)
-    func fetchRelatedMovies(movieID: Int,completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void)
-    func fetchActorRelatedMovies(actorID: Int,completion: @escaping (Result<ActorRelatedMoviesResponse, NetworkError>) -> Void)
-    func fetchActorDetails(actorID: Int,completion: @escaping (Result<ActorDetails, NetworkError>) -> Void)
+    func fetchUpcoming() -> AnyPublisher<MoviesListResponse, NetworkError>
+    func fetchMostPopular() -> AnyPublisher<MoviesListResponse, NetworkError>
+    func fetchAllActors() -> AnyPublisher<ActorsListResponse, NetworkError>
+    func searchMovie(movieName: String) -> AnyPublisher<MoviesListResponse, NetworkError>
+    func searchActor(actorName: String) -> AnyPublisher<ActorsListResponse, NetworkError>
+    func fetchMovieDetails(movieID: Int) -> AnyPublisher<MovieDetails, NetworkError>
+    func fetchMovieCast(movieID: Int) -> AnyPublisher<MovieCastResponse, NetworkError>
+    func fetchRelatedMovies(movieID: Int) -> AnyPublisher<MoviesListResponse, NetworkError>
+    func fetchActorRelatedMovies(actorID: Int) -> AnyPublisher<ActorRelatedMoviesResponse, NetworkError>
+    func fetchActorDetails(actorID: Int) -> AnyPublisher<ActorDetails, NetworkError>
     func addToFavorites(movie: Movie)
     func removeFromFavorites(movieId: Int)
     func isMovieFavorite(movieId: Int) -> Bool
