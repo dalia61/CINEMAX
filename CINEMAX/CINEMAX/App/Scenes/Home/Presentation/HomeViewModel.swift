@@ -5,8 +5,8 @@
 //  Created by Dalia Hamada on 15/12/2024.
 //
 
-import Foundation
 import Combine
+import Foundation
 import SwiftUI
 
 class HomeViewModel: ObservableObject {
@@ -48,14 +48,14 @@ class HomeViewModel: ObservableObject {
         self.upcomingMoviesUseCase = upcomingMoviesUseCase
         self.mostPopularMoviesUseCase = mostPopularMoviesUseCase
         self.getActorsListUseCase = getActorsListUseCase
-        
+
         self.addToFavoritesUseCase = addToFavoritesUseCase
         self.isMovieFavorieUseCase = isMovieFavorieUseCase
         self.removeFromFavoritesUseCase = removeFromFavoritesUseCase
 
         setupObservers()
     }
-    
+
     func setupObservers() {
         viewAppeared
             .subscribe(on: DispatchQueue.global(qos: .background))
@@ -68,7 +68,7 @@ class HomeViewModel: ObservableObject {
                 getActorsList()
             }
             .store(in: &cancellables)
-        
+
         favoriteTapped
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: DispatchQueue.main)
@@ -89,10 +89,10 @@ class HomeViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
+
     private func favoriteTapped(movieIndex: Int) {
         let movie = mostPopularMovies[movieIndex]
-        guard let movieId = movie.id else {return }
+        guard let movieId = movie.id else { return }
 
         if isMovieFavorieUseCase.execute(movieId: movieId) {
             removeFromFavoritesUseCase.execute(movieId: movieId)
@@ -105,30 +105,32 @@ class HomeViewModel: ObservableObject {
         removeSessionUseCase.execute()
         showSignUp = true
     }
-    
+
     private func getMostPopularMovies() {
         mostPopularViewState = .loading
 
-        mostPopularMoviesUseCase.execute { result in
-            switch result {
-            case .success(let response):
+        mostPopularMoviesUseCase.execute()
+            .sink(receiveCompletion: { completion in
+                if case .failure = completion {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+
+                        mostPopularViewState = .failed
+                    }
+                }
+            }, receiveValue: { [weak self] response in
+                guard let self else { return }
+
                 DispatchQueue.main.async { [weak self] in
                     guard let self else { return }
-                    
+
                     mostPopularMovies = mapMostPopularMoviesResponse(response: response)
                     mostPopularViewState = mostPopularMovies.isEmpty ? .empty : .loaded
                 }
-
-            case .failure:
-                DispatchQueue.main.async { [weak self] in
-                    guard let self else { return }
-
-                    mostPopularViewState = .failed
-                }
-            }
-        }
+            })
+            .store(in: &cancellables)
     }
-    
+
     private func mapMostPopularMoviesResponse(response: MoviesListResponse) -> [Movie] {
         let movies = response.results ?? []
         var formattedMovies: [Movie] = []
@@ -138,53 +140,57 @@ class HomeViewModel: ObservableObject {
                 formattedMovies.append(Movie(adult: movie.adult, backdropPath: movie.backdropPath, genreIds: movie.genreIds, id: movie.id, originalLanguage: movie.originalLanguage, originalTitle: movie.originalTitle, overview: movie.overview, popularity: movie.popularity, posterPath: movie.posterPath, releaseDate: movie.releaseDate, title: movie.title, video: movie.video, voteAverage: movie.voteAverage, voteCount: movie.voteCount, isFavorite: isMovieFavorieUseCase.execute(movieId: movieId)))
             }
         }
-        
+
         return formattedMovies
     }
 
     private func getUpcomingMovies() {
         upcomingViewState = .loading
 
-        upcomingMoviesUseCase.execute { result in
-            switch result {
-            case .success(let response):
+        upcomingMoviesUseCase.execute()
+            .sink(receiveCompletion: { completion in
+                if case .failure = completion {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+
+                        upcomingViewState = .failed
+                    }
+                }
+            }, receiveValue: { [weak self] response in
+                guard let self else { return }
+
                 DispatchQueue.main.async { [weak self] in
                     guard let self else { return }
 
                     upcomingMovies = Array(response.results?.shuffled().prefix(5) ?? [])
                     upcomingViewState = upcomingMovies.isEmpty ? .empty : .loaded
                 }
-
-            case .failure:
-                DispatchQueue.main.async { [weak self] in
-                    guard let self else { return }
-
-                    upcomingViewState = .failed
-                }
-            }
-        }
+            })
+            .store(in: &cancellables)
     }
-    
+
     private func getActorsList() {
         actorsViewState = .loading
 
-        getActorsListUseCase.execute { result in
-            switch result {
-            case .success(let response):
+        getActorsListUseCase.execute()
+            .sink(receiveCompletion: { completion in
+                if case .failure = completion {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+
+                        actorsViewState = .failed
+                    }
+                }
+            }, receiveValue: { [weak self] response in
+                guard let self else { return }
+
                 DispatchQueue.main.async { [weak self] in
                     guard let self else { return }
 
-                    actors = Array(response.results?.shuffled().prefix(5)  ?? [])
+                    actors = Array(response.results?.shuffled().prefix(5) ?? [])
                     actorsViewState = actors.isEmpty ? .empty : .loaded
                 }
-
-            case .failure:
-                DispatchQueue.main.async { [weak self] in
-                    guard let self else { return }
-
-                    actorsViewState = .failed
-                }
-            }
-        }
+            })
+            .store(in: &cancellables)
     }
 }

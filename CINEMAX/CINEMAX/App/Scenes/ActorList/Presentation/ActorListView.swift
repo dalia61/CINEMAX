@@ -86,3 +86,7 @@ struct ActorListView: View {
         }
     }
 }
+
+#Preview {
+    ActorListView(viewModel: ActorListViewModel())
+}

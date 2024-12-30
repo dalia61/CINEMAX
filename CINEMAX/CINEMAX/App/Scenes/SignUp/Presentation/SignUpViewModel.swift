@@ -60,21 +60,27 @@ class SignUpViewModel: ObservableObject {
 
         isLoading = true
         
-        signUpUseCase.execute(username: username, firstName: firstName, lastName: lastName, email: email, password: password) { result in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                guard let self else { return }
-                isLoading = false
-                error = ""
+        signUpUseCase.execute(username: username, firstName: firstName, lastName: lastName, email: email, password: password)
+            .sink(receiveCompletion: { completion in
+                if case .failure = completion {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+                        isLoading = false
+                        error = "Something went wrong"
+                    }
+                }
+            }, receiveValue: { signUpModel in
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
 
-                switch result {
-                case .success(let signUpModel):
+                    isLoading = false
+                    error = ""
+
                     if signUpModel.status == "success" {
                         showLogin = true
                     }
-                case .failure(let failure):
-                    error = failure.localizedDescription
                 }
-            }
-        }
+            })
+            .store(in: &cancellables)
     }
 }

@@ -47,45 +47,49 @@ class ActorDetailsViewModel: ObservableObject {
     private func getActorDetails() {
         detailsState = .loading
 
-        getActorDetailsUseCase.execute(actorId: actorID) { result in
-            switch result {
-            case .success(let response):
+        getActorDetailsUseCase.execute(actorId: actorID)
+            .sink(receiveCompletion: { completion in
+                if case .failure = completion {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+                        detailsState = .failed
+                    }
+                }
+            }, receiveValue: { [weak self] response in
+                guard let self else { return }
+                
                 DispatchQueue.main.async { [weak self] in
                     guard let self else { return }
                     
                     actorDetails = response
                     detailsState = .loaded
                 }
-
-            case .failure:
-                DispatchQueue.main.async { [weak self] in
-                    guard let self else { return }
-                    detailsState = .failed
-                }
-            }
-        }
+            })
+            .store(in: &cancellables)
     }
 
     private func getActorRelatedMovies() {
         relatedMoviesState = .loading
 
-        getActorRelatedMoviesUseCase.execute(actorId: actorID) { result in
-            switch result {
-            case .success(let response):
+        getActorRelatedMoviesUseCase.execute(actorId: actorID)
+            .sink(receiveCompletion: { completion in
+                if case .failure = completion {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+                        relatedMoviesState = .failed
+                    }
+                }
+            }, receiveValue: { [weak self] response in
+                guard let self else { return }
+                
                 DispatchQueue.main.async { [weak self] in
                     guard let self else { return }
                     
                     relatedMovies = mapActorResponse(response: response)
                     relatedMoviesState = .loaded
                 }
-
-            case .failure:
-                DispatchQueue.main.async { [weak self] in
-                    guard let self else { return }
-                    relatedMoviesState = .failed
-                }
-            }
-        }
+            })
+            .store(in: &cancellables)
     }
     private func mapActorResponse(response: ActorRelatedMoviesResponse) -> [Cast] {
         return response.cast ?? []

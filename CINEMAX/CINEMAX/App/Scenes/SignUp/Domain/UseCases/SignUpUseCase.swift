@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 protocol SignUpUseCaseProtocol {
     func execute(
@@ -13,9 +14,9 @@ protocol SignUpUseCaseProtocol {
         firstName: String,
         lastName: String,
         email: String,
-        password: String,
-        completion: @escaping (Result<SignUpResponse, NetworkError>) -> Void
-    )
+        password: String
+    ) -> AnyPublisher<SignUpResponse, NetworkError>
+
 }
 
 final class SignUpUseCase: SignUpUseCaseProtocol {
@@ -30,9 +31,8 @@ final class SignUpUseCase: SignUpUseCaseProtocol {
         firstName: String,
         lastName: String,
         email: String,
-        password: String,
-        completion: @escaping (Result<SignUpResponse, NetworkError>) -> Void
-    ) {
-        authRepo.signup(userName: username, firstName: firstName, lastName: lastName, email: email, password: password, completion: completion)
+        password: String
+    ) -> AnyPublisher<SignUpResponse, NetworkError> {
+        authRepo.signup(userName: username, firstName: firstName, lastName: lastName, email: email, password: password)
     }
 }
