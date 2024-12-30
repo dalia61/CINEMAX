@@ -40,23 +40,25 @@ class ActorListViewModel: ObservableObject {
     private func getActorsList() {
         state = .loading
 
-        getActorsListUseCase.execute { result in
-            switch result {
-            case .success(let response):
+        getActorsListUseCase.execute()
+            .sink(receiveCompletion: { completion in
+                if case .failure = completion {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+                        state = .failed
+                    }
+                }
+            }, receiveValue: { [weak self] response in
+                guard let self else { return }
+                
                 DispatchQueue.main.async { [weak self] in
                     guard let self else { return }
                     
                     movieCast = mapActorResponse(response: response)
                     state = movieCast.isEmpty ? .empty : .loaded
                 }
-
-            case .failure:
-                DispatchQueue.main.async { [weak self] in
-                    guard let self else { return }
-                    state = .failed
-                }
-            }
-        }
+            })
+            .store(in: &cancellables)
     }
     
     private func mapActorResponse(response: ActorsListResponse) -> [MovieCast] {

@@ -5,13 +5,12 @@
 //  Created by Dalia Hamada on 16/12/2024.
 //
 
-import Foundation
+import Combine
 
 protocol GetActorRelatedMoviesUseCaseProtocol {
     func execute(
-        actorId: Int,
-        completion: @escaping (Result<ActorRelatedMoviesResponse, NetworkError>) -> Void
-    )
+        actorId: Int
+    ) -> AnyPublisher<ActorRelatedMoviesResponse, NetworkError>
 }
 
 struct GetActorRelatedMoviesUseCase: GetActorRelatedMoviesUseCaseProtocol {
@@ -21,8 +20,7 @@ struct GetActorRelatedMoviesUseCase: GetActorRelatedMoviesUseCaseProtocol {
         self.moviesRepo = moviesRepo
     }
 
-    func execute(actorId: Int, completion: @escaping (Result<ActorRelatedMoviesResponse, NetworkError>) -> Void) {
-        moviesRepo.fetchActorRelatedMovies(actorID: actorId, completion: completion)
+    func execute(actorId: Int) -> AnyPublisher<ActorRelatedMoviesResponse, NetworkError> {
+        moviesRepo.fetchActorRelatedMovies(actorID: actorId)
     }
-    
 }

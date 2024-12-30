@@ -113,9 +113,18 @@ class MovieDetailsViewModel: ObservableObject {
     private func getMovieDetails() {
         detailsState = .loading
 
-        getMovieDetailsUseCase.execute(movieId: movieID) { result in
-            switch result {
-            case .success(let response):
+        getMovieDetailsUseCase.execute(movieId: movieID)
+            .sink(receiveCompletion: { completion in
+                if case .failure = completion {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+
+                        detailsState = .failed
+                    }
+                }
+            }, receiveValue: { [weak self] response in
+                guard let self else { return }
+                
                 DispatchQueue.main.async { [weak self] in
                     guard let self else { return }
                     
@@ -123,23 +132,25 @@ class MovieDetailsViewModel: ObservableObject {
                     isFavorited = self.isMovieFavorieUseCase.execute(movieId: movieID)
                     detailsState = .loaded
                 }
-
-            case .failure:
-                DispatchQueue.main.async { [weak self] in
-                    guard let self else { return }
-
-                    detailsState = .failed
-                }
-            }
-        }
+            })
+            .store(in: &cancellables)
     }
     
     private func getMovieCast() {
         castState = .loading
 
-        getMovieCastUseCase.execute(movieId: movieID) { result in
-            switch result {
-            case .success(let response):
+        getMovieCastUseCase.execute(movieId: movieID)
+            .sink(receiveCompletion: { completion in
+                if case .failure = completion {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+
+                        castState = .failed
+                    }
+                }
+            }, receiveValue: { [weak self] response in
+                guard let self else { return }
+                
                 DispatchQueue.main.async { [weak self] in
                     guard let self else { return }
                     
@@ -148,23 +159,25 @@ class MovieDetailsViewModel: ObservableObject {
                     }) ?? [])
                     castState = .loaded
                 }
-
-            case .failure:
-                DispatchQueue.main.async { [weak self] in
-                    guard let self else { return }
-
-                    castState = .failed
-                }
-            }
-        }
+            })
+            .store(in: &cancellables)
     }
     
     private func getRelatedMovies() {
         relatedMoviesState = .loading
 
-        getRelatedMoviesUseCase.execute(movieId: movieID) { result in
-            switch result {
-            case .success(let response):
+        getRelatedMoviesUseCase.execute(movieId: movieID)
+            .sink(receiveCompletion: { completion in
+                if case .failure = completion {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+
+                        relatedMoviesState = .failed
+                    }
+                }
+            }, receiveValue: { [weak self] response in
+                guard let self else { return }
+                
                 DispatchQueue.main.async { [weak self] in
                     guard let self else { return }
                     
@@ -173,14 +186,7 @@ class MovieDetailsViewModel: ObservableObject {
                     }) ?? []))
                     relatedMoviesState = .loaded
                 }
-
-            case .failure:
-                DispatchQueue.main.async { [weak self] in
-                    guard let self else { return }
-
-                    relatedMoviesState = .failed
-                }
-            }
-        }
+            })
+            .store(in: &cancellables)
     }
 }

@@ -15,7 +15,6 @@ class BaseCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        // Clean up the previous hosting controller's view
         hostingController?.view.removeFromSuperview()
         hostingController = nil
     }

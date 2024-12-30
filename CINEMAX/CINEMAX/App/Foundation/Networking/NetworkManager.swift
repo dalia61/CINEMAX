@@ -6,61 +6,57 @@
 //
 
 import Foundation
+import Combine
 
 protocol NetworkManagerProtocol: AnyObject {
-    func request<T: Codable>(
-        using endpoint: Endpoint,
-        completion: @escaping (Result<T, NetworkError>) -> Void
-    )
+    func request<T: Codable>(using endpoint: Endpoint) -> AnyPublisher<T, NetworkError>
 }
 
 class NetworkManager: NetworkManagerProtocol {
-    
-    // Perform network request with URLSession
-    func request<T: Decodable>(
-        using endpoint: Endpoint,
-        completion: @escaping (Result<T, NetworkError>) -> Void
-    ) {
+    func request<T: Decodable>(using endpoint: Endpoint) -> AnyPublisher<T, NetworkError> {
         var request = URLRequest(url: endpoint.requestURL)
         request.httpMethod = endpoint.method.rawValue
         endpoint.headers.forEach { request.addValue($0.value, forHTTPHeaderField: $0.key) }
-        
+
         if let body = endpoint.body {
             request.httpBody = body
-            //        if let body = endpoint.body {
-            //            do {
-            //                let jsonData = try JSONSerialization.data(withJSONObject: body, options: [])
-            //                request.httpBody = jsonData
-            //            }
-            //            catch {
-            //                return completion(.failure(.badResponse))
-            //            }
-            //        }
+//            if let body = endpoint.body {
+//                do {
+//                    let jsonData = try JSONSerialization.data(withJSONObject: body, options: [])
+//                    request.httpBody = jsonData
+//                } catch {
+//                    return completion(.failure(.badResponse))
+//                }
+//            }
         }
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(self.handleError(error)))
-                return
+
+        return Future { promise in
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                if let error = error {
+                    promise(.failure(self.handleError(error)))
+                    return
+                }
+
+                guard let data = data else {
+                    promise(.failure(.badResponse))
+                    return
+                }
+
+                do {
+                    let decodedData = try JSONDecoder().decode(T.self, from: data)
+                    promise(.success(decodedData))
+                } catch {
+                    promise(.failure(.decodingError))
+                }
             }
-            
-            guard let data = data else {
-                completion(.failure(.badResponse))
-                return
-            }
-            
-            do {
-                let decodedData = try JSONDecoder().decode(T.self, from: data)
-                completion(.success(decodedData))
-            } catch {
-                completion(.failure(.decodingError))
-            }
+
+            task.resume()
         }
-        
-        task.resume()
+        .eraseToAnyPublisher()
     }
-    
+
     private func handleError(_ error: Error) -> NetworkError {
         return .custom(ResponseError(message: error.localizedDescription))
     }
 }
+

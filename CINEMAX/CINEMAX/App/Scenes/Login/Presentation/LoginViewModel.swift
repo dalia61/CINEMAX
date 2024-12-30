@@ -23,13 +23,17 @@ class LoginViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
 
     init(
-        username: String = "",
-        password: String = "",
+        username: String? = "",
+        password: String? = "",
         loginUseCase: LoginUseCaseProtocol = LoginUseCase(),
         saveSessionUseCase: SaveSessionUseCaseProtocol = SaveSessionUseCase()
     ) {
         self.loginUseCase = loginUseCase
         self.saveSessionUseCase = saveSessionUseCase
+        
+        self.username = username ?? ""
+        self.password = password ?? ""
+
         setupObservers()
     }
 
@@ -52,23 +56,22 @@ class LoginViewModel: ObservableObject {
         }
 
         isLoading = true
-        
-        loginUseCase.execute(username: username, password: password) { result in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+
+        loginUseCase.execute(username: username, password: password)
+            .sink(receiveCompletion: { completion in
+                if case .failure = completion {
+                    self.error = "Something went wrong"
+                }
+            }, receiveValue: { [weak self] loginModel in
                 guard let self else { return }
                 isLoading = false
                 error = ""
 
-                switch result {
-                case .success(let loginModel):
-                    if let accessToken = loginModel.accessToken, !accessToken.isEmpty {
-                        isLoginSuccess = true
-                        saveSessionUseCase.execute(accessToken: accessToken)
-                    }
-                case .failure(let failure):
-                    error = failure.localizedDescription
+                if let accessToken = loginModel.accessToken, !accessToken.isEmpty {
+                    isLoginSuccess = true
+                    saveSessionUseCase.execute(accessToken: accessToken)
                 }
-            }
-        }
+            })
+            .store(in: &cancellables)
     }
 }

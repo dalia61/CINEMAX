@@ -6,10 +6,13 @@
 //
 
 import Foundation
+import Combine
 
 protocol AuthRepoProtocol {
-    func signup(userName: String, firstName: String, lastName: String, email: String, password: String, completion: @escaping (Result<SignUpResponse, NetworkError>) -> Void)
-    func login(userName: String, password: String, completion: @escaping (Result<LoginResponse, NetworkError>) -> Void)
+    func signup(userName: String, firstName: String, lastName: String, email: String, password: String)
+    -> AnyPublisher<SignUpResponse, NetworkError>
+    func login(userName: String, password: String)
+    -> AnyPublisher<LoginResponse, NetworkError>
     func saveSession(accessToken: String)
     func getAccessToken() -> String?
     func removeSession()

@@ -9,26 +9,19 @@ import SwiftUI
 
 struct HomeView: View {
     @ObservedObject var viewModel: HomeViewModel
-    
-    @State private var isMoviesListViewPresented = false
-    @State private var isMoviesDetailsViewPresented = false
-    @State private var selectedMovieID: Int?
-    
-    @State private var isActorsListViewPresented = false
-    @State private var isActorDetailsViewPresented = false
-    @State private var selectedActorID: Int?
-    
+    @EnvironmentObject var router: Router
+
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
     }
-    
+
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack {
                     makeHeaderView()
                     Divider()
-                    
+
                     makeUpcomingMoviesView()
                         .frame(height: 180)
                     Divider()
@@ -47,30 +40,36 @@ struct HomeView: View {
                 viewModel.viewAppeared.send()
             }
         }
+        .onReceive(viewModel.$showSignUp) { showSignUp in
+            if showSignUp {
+                router.navigateToRoot()
+            }
+        }
         .navigationBarHidden(true)
     }
-    
+
     private func makeHeaderView() -> some View {
         HStack {
             Image(.atosLogo)
                 .resizable()
                 .frame(width: 40, height: 40)
                 .clipShape(Circle())
-            
+
             VStack(alignment: .leading) {
                 Text("Hello, Dalia 👋")
                     .foregroundStyle(.white)
                     .font(.system(size: 16, weight: .semibold))
-                
+
                 Text("Let’s stream your favorite movie.")
                     .foregroundStyle(.gray)
                     .font(.system(size: 12, weight: .medium))
             }
-            
+
             Spacer()
-            
+
             Button(action: {
                 viewModel.logoutTapped.send()
+                router.navigate(to: .signup)
             }) {
                 Image(systemName: "iphone.and.arrow.right.inward")
                     .resizable()
@@ -79,7 +78,7 @@ struct HomeView: View {
             }
         }
     }
-    
+
     private func makeUpcomingMoviesView() -> some View {
         Group {
             switch viewModel.upcomingViewState {
@@ -94,9 +93,9 @@ struct HomeView: View {
             }
         }
     }
-    
+
     private func makeMostPopularMoviesView() -> some View {
-        Group {
+        VStack {
             switch viewModel.mostPopularViewState {
             case .loading:
                 ProgressView()
@@ -105,45 +104,23 @@ struct HomeView: View {
                 EmptyView()
             case .loaded:
                 SectionHeaderView(title: "Most popular", buttonTitle: "See All") {
-                    isMoviesListViewPresented = true
+                    router.navigate(to: .moviesList)
                 }
                 .padding(.top, 8)
-                
+
                 MoviesSectionView(
                     movies: viewModel.mostPopularMovies,
                     onMovieSelected: { movie in
-                        selectedMovieID = movie.id
-                        isMoviesDetailsViewPresented = true
+                        router.navigate(to: .movieDetails(movieID: movie.id ?? 0))
                     }, onMovieFavorite: { index in
                         viewModel.favoriteTapped.send(index)
                     }
                 )
                 .padding(.top, 8)
-                
-                NavigationLink(
-                    destination: MoviesListView(viewModel: MoviesListViewModel()),
-                    isActive: $isMoviesListViewPresented
-                ) {
-                    EmptyView()
-                }
-                
-                NavigationLink(
-                    destination: MovieDetailsView(viewModel: MovieDetailsViewModel(movieID: selectedMovieID ?? 0)),
-                    isActive: $isMoviesDetailsViewPresented
-                ) {
-                    EmptyView()
-                }
-
-                NavigationLink(
-                    destination: SignUpView(viewModel: SignUpViewModel()),
-                    isActive: $viewModel.showSignUp
-                ) {
-                    EmptyView()
-                }
             }
         }
     }
-    
+
     private func makeActorsView() -> some View {
         Group {
             switch viewModel.actorsViewState {
@@ -154,32 +131,17 @@ struct HomeView: View {
                 EmptyView()
             case .loaded:
                 SectionHeaderView(title: "Popular Actors", buttonTitle: "See All") {
-                    isActorsListViewPresented = true
+                    router.navigate(to: .actorsList)
                 }
                 .padding(.top, 8)
-                
+
                 ActorSectionView(
                     actors: viewModel.actors,
                     onActorSelected: { actor in
-                        selectedActorID = actor.id
-                        isActorDetailsViewPresented = true
+                        router.navigate(to: .actorDetails(actorID: actor.id ?? 0))
                     }
                 )
                 .padding(.top, 8)
-                
-                NavigationLink(
-                    destination: ActorListView(viewModel: ActorListViewModel()),
-                    isActive: $isActorsListViewPresented
-                ) {
-                    EmptyView()
-                }
-                
-                NavigationLink(
-                    destination: ActorDetailsView(viewModel: ActorDetailsViewModel(actorID: selectedActorID ?? 0)),
-                    isActive: $isActorDetailsViewPresented
-                ) {
-                    EmptyView()
-                }
             }
         }
     }

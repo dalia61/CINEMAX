@@ -15,7 +15,6 @@ struct MovieCollectionViewWrapper: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: UpComingMovieViewController, context: Context) {
-
         uiViewController.updateMovies(movies)
     }
 }

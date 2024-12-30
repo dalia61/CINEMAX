@@ -9,8 +9,8 @@ import SwiftUI
 
 struct MovieDetailsView: View {
     @ObservedObject var viewModel: MovieDetailsViewModel
-    @Environment(\.dismiss) private var dismiss
-    
+    @EnvironmentObject var router: Router
+
     init(viewModel: MovieDetailsViewModel) {
         self.viewModel = viewModel
     }
@@ -20,10 +20,10 @@ struct MovieDetailsView: View {
             NavigationBarView(
                 title: viewModel.movieDetails?.title ?? "",
                 onDismiss: {
-                    dismiss()
+                    router.navigateBack()
                 }
             )
-            
+
             switch viewModel.detailsState {
             case .loading:
                 makeLoadingView()
@@ -37,7 +37,10 @@ struct MovieDetailsView: View {
             case .loaded:
                 makeMovieDetailsView()
             }
+            
+            Spacer()
         }
+        .padding(.horizontal, 16)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.darkAccent)
         .onAppear {
@@ -82,7 +85,6 @@ struct MovieDetailsView: View {
                     
                     makeRelatedMovies()
                 }
-                .padding(.horizontal, 16)
             }
         }
     }
@@ -170,6 +172,7 @@ struct MovieDetailsView: View {
                 ActorSectionView(
                     actors: viewModel.movieCast,
                     onActorSelected: { actor in
+                        router.navigate(to: .actorDetails(actorID: actor.id ?? 0))
                     })
             }
         }
@@ -190,6 +193,7 @@ struct MovieDetailsView: View {
                 MoviesSectionView(
                     movies: viewModel.relatedMovies,
                     onMovieSelected: { movie in
+                        router.navigate(to: .movieDetails(movieID: movie.id ?? 0))
                     }, onMovieFavorite: { index in
                         viewModel.favoriteTapped.send(index)
                     })

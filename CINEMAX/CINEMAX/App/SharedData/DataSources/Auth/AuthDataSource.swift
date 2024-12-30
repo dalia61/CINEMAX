@@ -7,6 +7,7 @@
 
 import Foundation
 import KeychainSwift
+import Combine
 
 struct AuthDataSource: AuthDataSourceProtocol {
     private let networkingManger: NetworkManagerProtocol
@@ -16,20 +17,14 @@ struct AuthDataSource: AuthDataSourceProtocol {
         self.networkingManger = networkingManger
     }
     
-    func signup(userName: String, firstName: String, lastName: String, email: String, password: String, completion: @escaping (Result<SignUpResponse, NetworkError>) -> Void) {
+    func signup(userName: String, firstName: String, lastName: String, email: String, password: String) -> AnyPublisher<SignUpResponse, NetworkError> {
         let endpoint = MoviesEndpoint.signup(username: userName, firstName: firstName, lastName: lastName, email: email, password: password)
-        networkingManger.request(
-            using: endpoint,
-            completion: completion
-        )
+        return networkingManger.request(using: endpoint)
     }
     
-    func login(userName: String, password: String, completion: @escaping (Result<LoginResponse, NetworkError>) -> Void) {
+    func login(userName: String, password: String) -> AnyPublisher<LoginResponse, NetworkError>  {
         let endpoint = MoviesEndpoint.login(username: userName, password: password)
-        networkingManger.request(
-            using: endpoint,
-            completion: completion
-        )
+        return networkingManger.request(using: endpoint)
     }
     
     func saveSession(accessToken: String) {

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 struct AuthRepo: AuthRepoProtocol {
     let authDataSource: AuthDataSourceProtocol
@@ -16,12 +17,15 @@ struct AuthRepo: AuthRepoProtocol {
         self.authDataSource = authDataSource
     }
     
-    func signup(userName: String, firstName: String, lastName: String, email: String, password: String, completion: @escaping (Result<SignUpResponse, NetworkError>) -> Void) {
-        authDataSource.signup(userName: userName, firstName: firstName, lastName: lastName, email: email, password: password, completion: completion)
+    func signup(userName: String, firstName: String, lastName: String, email: String, password: String) -> AnyPublisher<SignUpResponse, NetworkError> {
+        authDataSource.signup(userName: userName, firstName: firstName, lastName: lastName, email: email, password: password)
     }
     
-    func login(userName: String, password: String, completion: @escaping (Result<LoginResponse, NetworkError>) -> Void) {
-        authDataSource.login(userName: userName, password: password, completion: completion)
+    func login(userName: String, password: String) -> AnyPublisher<LoginResponse, NetworkError> {
+        //        authDataSource.login(userName: userName, password: password)
+        return Just(LoginResponse(accessToken: "test"))
+            .mapError { _ in NetworkError.badResponse } // Convert Never to NetworkError
+            .eraseToAnyPublisher()
     }
     
     func saveSession(accessToken: String) {

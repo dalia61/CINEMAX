@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     @ObservedObject var viewModel: LoginViewModel
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var router: Router
 
     init(viewModel: LoginViewModel) {
         self.viewModel = viewModel
@@ -85,22 +85,20 @@ struct LoginView: View {
                             .foregroundStyle(.grayAccent)
                         
                         Button("Sign Up") {
-                            dismiss()
+                            router.navigateBack()
                         }
                         .fontWeight(.semibold)
                         .font(.system(size: 16))
                         .foregroundStyle(.blueAccent)
                     }
                 }
-                
-                NavigationLink(
-                    destination: TabBarView(),
-                    isActive: $viewModel.isLoginSuccess
-                ) {
-                    EmptyView()
-                }
             }
             .background(.darkAccent)
+        }
+        .onReceive(viewModel.$isLoginSuccess) { isLoginSuccess in
+            if isLoginSuccess {
+                router.navigate(to: .tabBar)
+            }
         }
         .navigationBarHidden(true)
     }

@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import Combine
 
 protocol GetMostPopularMoviesUseCaseProtocol {
-    func execute(completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void)
+    func execute() -> AnyPublisher<MoviesListResponse, NetworkError>
 }
 
 struct GetMostPopularMoviesUseCase: GetMostPopularMoviesUseCaseProtocol {
@@ -18,7 +19,7 @@ struct GetMostPopularMoviesUseCase: GetMostPopularMoviesUseCaseProtocol {
         self.moviesRepo = moviesRepo
     }
 
-    func execute(completion: @escaping (Result<MoviesListResponse, NetworkError>) -> Void) {
-        moviesRepo.fetchMostPopular(completion: completion)
+    func execute() -> AnyPublisher<MoviesListResponse, NetworkError> {
+        moviesRepo.fetchMostPopular()
     }
 }
