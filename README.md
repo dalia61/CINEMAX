@@ -41,20 +41,26 @@ Follow these steps to set up and run the CINEMAX app:
 
 ### User Account Management
 - **Sign Up**: Create a new account with username, password, name, and email.
+  
 - **Login**: Authenticate users to access the app.
 
 ### Movie Exploration
 - **Home Screen**: Displays upcoming movies, popular movies, and actors.
+
+- **Movie List**: View movie cards with essential details. Sort movies by popularity, rating, or release date.
+
 - **Movie Details**: Provides comprehensive details like release date, genres, runtime, trailers, and cast.
-- **Sorting Options**: Sort movies by popularity, rating, or release date.
 
 ### Actor Information
 - **Actor List**: View actor cards with essential details like name, place of birth, and popularity.
+
 - **Actor Details**: Explore actor biographies, filmographies, and associated movies or series.
 
 ### Search and Favorites
 - **Search Screen**: Quickly find movies or actors using keywords.
+
 - **Favorites**: Save movies to a wishlist for easy access.
+
 
 ---
 
@@ -73,30 +79,49 @@ Follow these steps to set up and run the CINEMAX app:
 ### Launch Screen
 - **Launch Screen**
   
+  <img src="CINEMAX/CINEMAX/App/Resourses/Assets/Assets.xcassets/Launch Screen.imageset/Launch Screen.png" width="300">
+
 ### User Screens
 - **Sign Up**
   
+  <img src="CINEMAX/CINEMAX/App/Resourses/Assets/Assets.xcassets/Sign Up.imageset/Sign Up.png" width="300">
+  
 - **Login**
   
+  <img src="CINEMAX/CINEMAX/App/Resourses/Assets/Assets.xcassets/Login.imageset/Login.png" width="300">
+  
 - **Home Screen**
+  
+  <img src="CINEMAX/CINEMAX/App/Resourses/Assets/Assets.xcassets/Home Screen.imageset/Home Screen.png" width="300">
   
 
 ### Movie Screens
 - **Movie List**
   
+  <img src="CINEMAX/CINEMAX/App/Resourses/Assets/Assets.xcassets/Movie List.imageset/Movie List.png" width="300">
+  
 - **Movie Details**
+  
+  <img src="CINEMAX/CINEMAX/App/Resourses/Assets/Assets.xcassets/Movie Details.imageset/Movie Details.png" width="300">
   
 
 ### Actor Screens
 - **Actor List**
   
+  <img src="CINEMAX/CINEMAX/App/Resourses/Assets/Assets.xcassets/Actor List.imageset/Actor List.png" width="300">
+  
 - **Actor Details**
   
+  <img src="CINEMAX/CINEMAX/App/Resourses/Assets/Assets.xcassets/Actor Details.imageset/Actor Details.png" width="300">
 
 ### Additional Screens
 - **Favorites**
   
+  <img src="CINEMAX/CINEMAX/App/Resourses/Assets/Assets.xcassets/Favorites.imageset/Favorites.png" width="300">
+  
 - **Search**
+  
+  <img src="CINEMAX/CINEMAX/App/Resourses/Assets/Assets.xcassets/Search.imageset/Search.png" width="300">
   
 
 ---
