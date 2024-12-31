@@ -29,7 +29,7 @@ class MovieDetailsViewModel: ObservableObject {
 
     private let addToFavoritesUseCase: AddToFavoritesUseCaseProtocol
     private let isMovieFavorieUseCase: IsMovieFavorieUseCaseProtocol
-    private let removeFromFavoritesUseCase: RemoveFromFavoritesUseCaseProtocol
+    private let removeMovieFromFavoritesUseCase: RemoveMovieFromFavoritesUseCaseProtocol
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -40,7 +40,7 @@ class MovieDetailsViewModel: ObservableObject {
         getRelatedMoviesUseCase: GetRelatedMoviesUseCaseProtocol = GetRelatedMoviesUseCase(),
         addToFavoritesUseCase: AddToFavoritesUseCaseProtocol = AddToFavoritesUseCase(),
         isMovieFavorieUseCase: IsMovieFavorieUseCaseProtocol = IsMovieFavorieUseCase(),
-        removeFromFavoritesUseCase: RemoveFromFavoritesUseCaseProtocol = RemoveFromFavoritesUseCase()
+        removeMovieFromFavoritesUseCase: RemoveMovieFromFavoritesUseCaseProtocol = RemoveMovieFromFavoritesUseCase()
     ) {
         self.movieID = movieID
 
@@ -50,7 +50,7 @@ class MovieDetailsViewModel: ObservableObject {
 
         self.addToFavoritesUseCase = addToFavoritesUseCase
         self.isMovieFavorieUseCase = isMovieFavorieUseCase
-        self.removeFromFavoritesUseCase = removeFromFavoritesUseCase
+        self.removeMovieFromFavoritesUseCase = removeMovieFromFavoritesUseCase
 
         setupObservers()
     }
@@ -91,7 +91,7 @@ class MovieDetailsViewModel: ObservableObject {
     
     private func movieDetailsFavoriteTapped() {
         if isMovieFavorieUseCase.execute(movieId: movieID) {
-            removeFromFavoritesUseCase.execute(movieId: movieID)
+            removeMovieFromFavoritesUseCase.execute(movieId: movieID)
         } else {
             let genresIDs: [Int] = movieDetails?.genres?.compactMap { $0.id } ?? []
             let movie = Movie(adult: movieDetails?.adult, backdropPath: movieDetails?.backdropPath, genreIds: genresIDs, id: movieDetails?.id, originalLanguage: movieDetails?.originalLanguage, originalTitle: movieDetails?.originalTitle, overview: movieDetails?.overview, popularity: movieDetails?.popularity, posterPath: movieDetails?.posterPath, releaseDate: movieDetails?.releaseDate, title: movieDetails?.title, video: movieDetails?.video, voteAverage: movieDetails?.voteAverage, voteCount: movieDetails?.voteCount)
@@ -104,7 +104,7 @@ class MovieDetailsViewModel: ObservableObject {
         guard let movieId = movie.id else {return }
 
         if isMovieFavorieUseCase.execute(movieId: movieId) {
-            removeFromFavoritesUseCase.execute(movieId: movieId)
+            removeMovieFromFavoritesUseCase.execute(movieId: movieId)
         } else {
             addToFavoritesUseCase.execute(movie: movie)
         }

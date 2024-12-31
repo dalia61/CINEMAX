@@ -19,7 +19,7 @@ struct SearchView: View {
         NavigationView {
             VStack {
                 SearchBarView(text: $viewModel.searchText)
-                    .padding(.top, 8)
+    
                 ScrollView (.vertical, showsIndicators: false) {
                     switch viewModel.moviesState {
                     case .loading:
@@ -36,14 +36,16 @@ struct SearchView: View {
                             makeActorListView()
                             makeMoviesListView()
                         }
-                        .padding(.top, 8)
                     }
                     Spacer()
                 }
             }
+            .padding(16)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(.horizontal, 16)
             .background(Color.darkAccent)
+            .onAppear {
+                viewModel.viewAppeared.send()
+            }
         }
     }
     
@@ -53,9 +55,7 @@ struct SearchView: View {
     }
     
     private func makeEmptyView() -> some View {
-        Text("No Data Available")
-            .foregroundColor(.gray)
-            .padding()
+        EmptyStateView()
     }
     
     private func makeFailureView() -> some View {
@@ -69,6 +69,8 @@ struct SearchView: View {
     
     private func makeMoviesListView() -> some View {
         ScrollView(.vertical, showsIndicators: false) {
+            SectionHeaderView(title: "Movies")
+                .padding(.top, 8)
             LazyVStack(spacing: 16) {
                 ForEach(viewModel.movies, id: \.id) { movie in
                     Button(action: {
@@ -78,7 +80,7 @@ struct SearchView: View {
                     }) {
                         MovieCardView(movie: movie, didFavoriteTap: {
                             if let index = viewModel.movies.firstIndex(where: { $0.id == movie.id }) {
-                                viewModel.favoriteTapped.send(index)
+                                viewModel.favoriteMovieTapped.send(index)
                             }
                         })
                     }

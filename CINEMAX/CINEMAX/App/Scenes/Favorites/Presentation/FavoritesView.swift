@@ -10,11 +10,11 @@ import SwiftUI
 struct FavoritesView: View {
     @ObservedObject var viewModel: FavoritesViewModel
     @EnvironmentObject var router: Router
-
+    
     init(viewModel: FavoritesViewModel) {
         self.viewModel = viewModel
     }
-
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -52,13 +52,11 @@ struct FavoritesView: View {
         ProgressView()
             .tint(.white)
     }
-
+    
     private func makeEmptyView() -> some View {
-        Text("No Data Available")
-            .foregroundColor(.gray)
-            .padding()
+        EmptyStateView()
     }
-
+    
     private func makeFailureView() -> some View {
         VStack {
             Text("Something went wrong, Try again later!")
@@ -67,7 +65,7 @@ struct FavoritesView: View {
                 .padding()
         }
     }
-
+    
     private func makeMoviesListView() -> some View {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(spacing: 16) {
@@ -79,7 +77,20 @@ struct FavoritesView: View {
                     }) {
                         MovieCardView(movie: movie, didFavoriteTap: {
                             if let index = viewModel.movies.firstIndex(where: { $0.id == movie.id }) {
-                                viewModel.favoriteTapped.send(index)
+                                viewModel.favoriteMovieTapped.send(index)
+                            }
+                        })
+                    }
+                }
+                ForEach(viewModel.moviesCast, id: \.id) { movie in
+                    Button(action: {
+                        if let movieID = movie.id {
+                            router.navigate(to: .movieDetails(movieID: movieID))
+                        }
+                    }) {
+                        MovieCastCardView(movie: movie, didFavoriteTap: {
+                            if let index = viewModel.moviesCast.firstIndex(where: { $0.id == movie.id }) {
+                                viewModel.favoriteMovieCastTapped.send(index)
                             }
                         })
                     }

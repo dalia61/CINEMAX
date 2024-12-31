@@ -18,6 +18,9 @@ struct Cast: Codable, Identifiable {
     let adult: Bool?
     let backdropPath: String?
     let genreIDS: [Int]?
+    var primaryGenre: String {
+        genreIDS?.compactMap { genres[$0] }.first ?? ""
+    }
     let id: Int?
     let originalLanguage: OriginalLanguage?
     let originalTitle, overview: String?

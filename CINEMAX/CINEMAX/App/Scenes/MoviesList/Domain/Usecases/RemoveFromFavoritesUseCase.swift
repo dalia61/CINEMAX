@@ -7,11 +7,15 @@
 
 import Foundation
 
-protocol RemoveFromFavoritesUseCaseProtocol {
+protocol RemoveMovieFromFavoritesUseCaseProtocol {
     func execute(movieId: Int)
 }
 
-struct RemoveFromFavoritesUseCase: RemoveFromFavoritesUseCaseProtocol {
+protocol RemoveMovieCastFromFavoritesUseCaseProtocol {
+    func execute(movieId: Int)
+}
+
+struct RemoveMovieFromFavoritesUseCase: RemoveMovieFromFavoritesUseCaseProtocol {
     private let moviesRepo: MoviesRepoProtocol
     
     init(moviesRepo: MoviesRepoProtocol = MoviesRepo()) {
@@ -19,6 +23,18 @@ struct RemoveFromFavoritesUseCase: RemoveFromFavoritesUseCaseProtocol {
     }
     
     func execute(movieId: Int) {
-        moviesRepo.removeFromFavorites(movieId: movieId)
+        moviesRepo.removeMovieFromFavorites(movieId: movieId)
+    }
+}
+
+struct RemoveMovieCastFromFavoritesUseCase: RemoveMovieCastFromFavoritesUseCaseProtocol {
+    private let moviesRepo: MoviesRepoProtocol
+    
+    init(moviesRepo: MoviesRepoProtocol = MoviesRepo()) {
+        self.moviesRepo = moviesRepo
+    }
+    
+    func execute(movieId: Int) {
+        moviesRepo.removeMovieCastFromFavorites(movieId: movieId)
     }
 }

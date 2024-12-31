@@ -22,7 +22,7 @@ class MoviesListViewModel: ObservableObject {
 
     private let addToFavoritesUseCase: AddToFavoritesUseCaseProtocol
     private let isMovieFavorieUseCase: IsMovieFavorieUseCaseProtocol
-    private let removeFromFavoritesUseCase: RemoveFromFavoritesUseCaseProtocol
+    private let removeMovieFromFavoritesUseCase: RemoveMovieFromFavoritesUseCaseProtocol
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -31,13 +31,13 @@ class MoviesListViewModel: ObservableObject {
         sortMoviesMoviesUseCase: SortMoviesUseCaseProtocol = SortMoviesUseCase(),
         addToFavoritesUseCase: AddToFavoritesUseCaseProtocol = AddToFavoritesUseCase(),
         isMovieFavorieUseCase: IsMovieFavorieUseCaseProtocol = IsMovieFavorieUseCase(),
-        removeFromFavoritesUseCase: RemoveFromFavoritesUseCaseProtocol = RemoveFromFavoritesUseCase()
+        removeMovieFromFavoritesUseCase: RemoveMovieFromFavoritesUseCaseProtocol = RemoveMovieFromFavoritesUseCase()
     ) {
         self.mostPopularMoviesUseCase = mostPopularMoviesUseCase
         self.sortMoviesUseCase = sortMoviesMoviesUseCase
         self.addToFavoritesUseCase = addToFavoritesUseCase
         self.isMovieFavorieUseCase = isMovieFavorieUseCase
-        self.removeFromFavoritesUseCase = removeFromFavoritesUseCase
+        self.removeMovieFromFavoritesUseCase = removeMovieFromFavoritesUseCase
 
         setupObservers()
     }
@@ -48,7 +48,6 @@ class MoviesListViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
-
                 getMostPopularMovies()
             }
             .store(in: &cancellables)
@@ -78,7 +77,7 @@ class MoviesListViewModel: ObservableObject {
         guard let movieId = movie.id else {return }
 
         if isMovieFavorieUseCase.execute(movieId: movieId) {
-            removeFromFavoritesUseCase.execute(movieId: movieId)
+            removeMovieFromFavoritesUseCase.execute(movieId: movieId)
         } else {
             addToFavoritesUseCase.execute(movie: movie)
         }

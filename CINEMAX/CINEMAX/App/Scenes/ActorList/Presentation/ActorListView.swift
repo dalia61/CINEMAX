@@ -56,9 +56,7 @@ struct ActorListView: View {
     }
 
     private func makeEmptyView() -> some View {
-        Text("No Data Available")
-            .foregroundColor(.gray)
-            .padding()
+        EmptyStateView()
     }
 
     private func makeFailureView() -> some View {

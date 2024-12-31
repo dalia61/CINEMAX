@@ -23,9 +23,8 @@ struct ActorDetailsView: View {
                     router.navigateBack()
                 }
             )
-            .padding(.bottom, 16)
-            .padding(.top, 8)
             .padding(.horizontal, 16)
+            .padding(.bottom, 8)
             
             switch viewModel.detailsState {
             case .loading:
@@ -40,6 +39,7 @@ struct ActorDetailsView: View {
             case .loaded:
                 makeActorDetailsView()
             }
+            Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.darkAccent)
@@ -54,9 +54,7 @@ struct ActorDetailsView: View {
     }
     
     private func makeEmptyView() -> some View {
-        Text("No Data Available")
-            .foregroundColor(.gray)
-            .padding()
+        EmptyStateView()
     }
     private func makeFailureView() -> some View {
         VStack {
@@ -91,7 +89,6 @@ struct ActorDetailsView: View {
             ImageView(imageURL: viewModel.actorDetails?.profilePath)
                 .frame(height: 300)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                .padding([.horizontal, .top], 10)
         }
     }
     
@@ -136,6 +133,7 @@ struct ActorDetailsView: View {
     private func makeActorOverview() -> some View {
         VStack {
             Text("Story Line")
+                .padding(.bottom, 8)
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -149,7 +147,6 @@ struct ActorDetailsView: View {
     private func makeRelatedMovies() -> some View {
         VStack {
             SectionHeaderView(title: "Related Movies")
-                .padding(.top, 8)
 
             switch viewModel.relatedMoviesState {
             case .loading:
@@ -163,10 +160,11 @@ struct ActorDetailsView: View {
                     movies: viewModel.relatedMovies,
                     onMovieSelected: { movie in
                         router.navigate(to: .movieDetails(movieID: movie.id ?? 0))
+                    }, onMovieFavorite: { index in
+                        viewModel.favoriteTapped.send(index)
                     })
             }
         }
     }
 }
-
 

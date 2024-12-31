@@ -89,7 +89,7 @@ struct HomeView: View {
                 EmptyView()
             case .loaded:
                 MovieCollectionViewWrapper(movies: viewModel.upcomingMovies)
-                    .padding(.top, 8)
+                    .padding([.top,.bottom], 8)
             }
         }
     }
@@ -133,7 +133,6 @@ struct HomeView: View {
                 SectionHeaderView(title: "Popular Actors", buttonTitle: "See All") {
                     router.navigate(to: .actorsList)
                 }
-                .padding(.top, 8)
 
                 ActorSectionView(
                     actors: viewModel.actors,
@@ -145,4 +144,7 @@ struct HomeView: View {
             }
         }
     }
+}
+#Preview {
+    HomeView(viewModel: HomeViewModel())
 }

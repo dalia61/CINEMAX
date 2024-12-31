@@ -23,6 +23,8 @@ struct MovieDetailsView: View {
                     router.navigateBack()
                 }
             )
+            .padding(.horizontal, 16)
+            .padding(.bottom, 8)
 
             switch viewModel.detailsState {
             case .loading:
@@ -37,10 +39,8 @@ struct MovieDetailsView: View {
             case .loaded:
                 makeMovieDetailsView()
             }
-            
             Spacer()
         }
-        .padding(.horizontal, 16)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.darkAccent)
         .onAppear {
@@ -55,9 +55,7 @@ struct MovieDetailsView: View {
     }
     
     private func makeEmptyView() -> some View {
-        Text("No Data Available")
-            .foregroundColor(.gray)
-            .padding()
+        EmptyStateView()
     }
     
     private func makeFailureView() -> some View {
@@ -85,6 +83,7 @@ struct MovieDetailsView: View {
                     
                     makeRelatedMovies()
                 }
+                .padding(.horizontal, 16)
             }
         }
     }
@@ -147,6 +146,7 @@ struct MovieDetailsView: View {
     private func makeMovieOverview() -> some View {
         VStack {
             Text("Story Line")
+                .padding(.bottom, 8)
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity, alignment: .leading)

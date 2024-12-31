@@ -31,7 +31,7 @@ class HomeViewModel: ObservableObject {
 
     private let addToFavoritesUseCase: AddToFavoritesUseCaseProtocol
     private let isMovieFavorieUseCase: IsMovieFavorieUseCaseProtocol
-    private let removeFromFavoritesUseCase: RemoveFromFavoritesUseCaseProtocol
+    private let removeMovieFromFavoritesUseCase: RemoveMovieFromFavoritesUseCaseProtocol
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -42,7 +42,7 @@ class HomeViewModel: ObservableObject {
         getActorsListUseCase: GetActorsListUseCaseProtocol = GetActorsListUseCase(),
         addToFavoritesUseCase: AddToFavoritesUseCaseProtocol = AddToFavoritesUseCase(),
         isMovieFavorieUseCase: IsMovieFavorieUseCaseProtocol = IsMovieFavorieUseCase(),
-        removeFromFavoritesUseCase: RemoveFromFavoritesUseCaseProtocol = RemoveFromFavoritesUseCase()
+        removeMovieFromFavoritesUseCase: RemoveMovieFromFavoritesUseCaseProtocol = RemoveMovieFromFavoritesUseCase()
     ) {
         self.removeSessionUseCase = removeSessionUseCase
         self.upcomingMoviesUseCase = upcomingMoviesUseCase
@@ -51,7 +51,7 @@ class HomeViewModel: ObservableObject {
 
         self.addToFavoritesUseCase = addToFavoritesUseCase
         self.isMovieFavorieUseCase = isMovieFavorieUseCase
-        self.removeFromFavoritesUseCase = removeFromFavoritesUseCase
+        self.removeMovieFromFavoritesUseCase = removeMovieFromFavoritesUseCase
 
         setupObservers()
     }
@@ -95,7 +95,7 @@ class HomeViewModel: ObservableObject {
         guard let movieId = movie.id else { return }
 
         if isMovieFavorieUseCase.execute(movieId: movieId) {
-            removeFromFavoritesUseCase.execute(movieId: movieId)
+            removeMovieFromFavoritesUseCase.execute(movieId: movieId)
         } else {
             addToFavoritesUseCase.execute(movie: movie)
         }

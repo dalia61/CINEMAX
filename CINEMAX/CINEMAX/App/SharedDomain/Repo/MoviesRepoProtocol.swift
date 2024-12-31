@@ -20,7 +20,10 @@ protocol MoviesRepoProtocol {
     func fetchActorRelatedMovies(actorID: Int) -> AnyPublisher<ActorRelatedMoviesResponse, NetworkError>
     func fetchActorDetails(actorID: Int) -> AnyPublisher<ActorDetails, NetworkError>
     func addToFavorites(movie: Movie)
-    func removeFromFavorites(movieId: Int)
+    func addToFavorites(movieCast: Cast)
+    func removeMovieFromFavorites(movieId: Int)
+    func removeMovieCastFromFavorites(movieId: Int)
     func isMovieFavorite(movieId: Int) -> Bool
     func fetchFavoriteMovies() -> [Movie]
+    func fetchFavoriteMoviesCast() -> [Cast]
 }

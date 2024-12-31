@@ -36,8 +36,9 @@ struct MoviesListView: View {
                     .background(Color("SoftAccent"))
                     .cornerRadius(8)
                 }
-                .padding([.top,.bottom], 8)
-                
+                .tint(.white)
+                .cornerRadius(8)
+
                 switch viewModel.state {
                 case .loading:
                     makeLoadingView()
@@ -69,9 +70,7 @@ struct MoviesListView: View {
     }
 
     private func makeEmptyView() -> some View {
-        Text("No Data Available")
-            .foregroundColor(.gray)
-            .padding()
+        EmptyStateView()
     }
 
     private func makeFailureView() -> some View {
@@ -86,7 +85,7 @@ struct MoviesListView: View {
     private func makeMoviesListView() -> some View {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(spacing: 16) {
-                ForEach(viewModel.movies, id: \.id) { movie in
+                ForEach(viewModel.movies) { movie in
                     Button(action: {
                         if let movieID = movie.id {
                             router.navigate(to: .movieDetails(movieID: movieID))

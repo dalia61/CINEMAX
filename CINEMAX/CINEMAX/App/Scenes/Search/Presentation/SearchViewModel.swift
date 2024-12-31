@@ -13,9 +13,12 @@ class SearchViewModel: ObservableObject {
     @Published var moviesState: ViewState = .empty
     @Published var actorsState: ViewState = .empty
 
-    var favoriteTapped: PassthroughSubject<Int, Never> = .init()
+    var viewAppeared: PassthroughSubject<Void, Never> = .init()
+    var favoriteMovieTapped: PassthroughSubject<Int, Never> = .init()
+    var favoriteMovieCastTapped: PassthroughSubject<Int, Never> = .init()
 
     var movies: [Movie] = []
+    var cast: [Cast] = []
     var movieCast: [MovieCast] = []
 
     private let searchMoviesUseCase: SearchMoviesUseCaseProtocol
@@ -23,7 +26,8 @@ class SearchViewModel: ObservableObject {
     
     private let addToFavoritesUseCase: AddToFavoritesUseCaseProtocol
     private let isMovieFavorieUseCase: IsMovieFavorieUseCaseProtocol
-    private let removeFromFavoritesUseCase: RemoveFromFavoritesUseCaseProtocol
+    private let removeMovieFromFavoritesUseCase: RemoveMovieFromFavoritesUseCaseProtocol
+    private let removeMovieCastFromFavoritesUseCase: RemoveMovieCastFromFavoritesUseCaseProtocol
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -32,19 +36,30 @@ class SearchViewModel: ObservableObject {
         searchActorsUseCase: SearchActorsUseCaseProtocol = SearchActorsUseCase(),
         addToFavoritesUseCase: AddToFavoritesUseCaseProtocol = AddToFavoritesUseCase(),
         isMovieFavorieUseCase: IsMovieFavorieUseCaseProtocol = IsMovieFavorieUseCase(),
-        removeFromFavoritesUseCase: RemoveFromFavoritesUseCaseProtocol = RemoveFromFavoritesUseCase()
+        removeMovieFromFavoritesUseCase: RemoveMovieFromFavoritesUseCaseProtocol = RemoveMovieFromFavoritesUseCase(),
+        removeMovieCastFromFavoritesUseCase: RemoveMovieCastFromFavoritesUseCaseProtocol = RemoveMovieCastFromFavoritesUseCase()
     ) {
         self.searchMoviesUseCase = searchMoviesUseCase
         self.searchActorsUseCase = searchActorsUseCase
 
         self.addToFavoritesUseCase = addToFavoritesUseCase
         self.isMovieFavorieUseCase = isMovieFavorieUseCase
-        self.removeFromFavoritesUseCase = removeFromFavoritesUseCase
+        self.removeMovieFromFavoritesUseCase = removeMovieFromFavoritesUseCase
+        self.removeMovieCastFromFavoritesUseCase = removeMovieCastFromFavoritesUseCase
 
         setupObservers()
     }
     
     func setupObservers() {
+        viewAppeared
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                    EmptyStateView()
+            }
+            .store(in: &cancellables)
+        
         $searchText
             .receive(on: DispatchQueue.main)
             .debounce(for: 1, scheduler: DispatchQueue.main)
@@ -56,25 +71,46 @@ class SearchViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         
-        favoriteTapped
+        favoriteMovieTapped
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: DispatchQueue.main)
             .sink { [weak self] index in
                 guard let self = self else { return }
 
-                favoriteTapped(movieIndex: index)
+                favoriteMovieTapped(movieIndex: index)
+            }
+            .store(in: &cancellables)
+        
+        favoriteMovieCastTapped
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] index in
+                guard let self = self else { return }
+
+                favoriteMovieCastTapped(movieIndex: index)
             }
             .store(in: &cancellables)
     }
     
-    private func favoriteTapped(movieIndex: Int) {
+    private func favoriteMovieTapped(movieIndex: Int) {
         let movie = movies[movieIndex]
         guard let movieId = movie.id else {return }
 
         if isMovieFavorieUseCase.execute(movieId: movieId) {
-            removeFromFavoritesUseCase.execute(movieId: movieId)
+            removeMovieFromFavoritesUseCase.execute(movieId: movieId)
         } else {
             addToFavoritesUseCase.execute(movie: movie)
+        }
+    }
+    
+    private func favoriteMovieCastTapped(movieIndex: Int) {
+        let movie = cast[movieIndex]
+        guard let movieId = movie.id else {return }
+
+        if isMovieFavorieUseCase.execute(movieId: movieId) {
+            removeMovieCastFromFavoritesUseCase.execute(movieId: movieId)
+        } else {
+            addToFavoritesUseCase.execute(movieCast: movie)
         }
     }
 

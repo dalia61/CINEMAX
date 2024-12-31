@@ -9,6 +9,7 @@ import Foundation
 
 protocol AddToFavoritesUseCaseProtocol {
     func execute(movie: Movie)
+    func execute(movieCast: Cast)
 }
 
 struct AddToFavoritesUseCase: AddToFavoritesUseCaseProtocol {
@@ -20,5 +21,9 @@ struct AddToFavoritesUseCase: AddToFavoritesUseCaseProtocol {
     
     func execute(movie: Movie) {
         moviesRepo.addToFavorites(movie: movie)
+    }
+    
+    func execute(movieCast: Cast) {
+        moviesRepo.addToFavorites(movieCast: movieCast)
     }
 }

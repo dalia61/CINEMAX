@@ -63,8 +63,16 @@ struct MoviesRepo: MoviesRepoProtocol {
         localMoviesDataSource.addToFavorites(movie: movie)
     }
     
-    func removeFromFavorites(movieId: Int) {
-        localMoviesDataSource.removeFromFavorites(movieId: movieId)
+    func addToFavorites(movieCast: Cast) {
+        localMoviesDataSource.addToFavorites(movieCast: movieCast)
+    }
+    
+    func removeMovieFromFavorites(movieId: Int) {
+        localMoviesDataSource.removeMovieFromFavorites(movieId: movieId)
+    }
+    
+    func removeMovieCastFromFavorites(movieId: Int) {
+        localMoviesDataSource.removeMovieCastFromFavorites(movieId: movieId)
     }
     
     func isMovieFavorite(movieId: Int) -> Bool {
@@ -73,5 +81,9 @@ struct MoviesRepo: MoviesRepoProtocol {
     
     func fetchFavoriteMovies() -> [Movie] {
         return localMoviesDataSource.fetchFavoriteMovies()
+    }
+    
+    func fetchFavoriteMoviesCast() -> [Cast] {
+        return localMoviesDataSource.fetchFavoriteMovieCasts()
     }
 }
