@@ -1,6 +1,6 @@
 # CINEMAX
 
-CINEMAX is a mobile application that provides detailed information about movies, series, and actors using the TMDb API. It offers a seamless experience for users to explore movie details, search for actors, and create personalized favorites lists.
+CINEMAX—A mobile application that provides detailed information about movies, and actors using the TMDb API. It offers a seamless experience for users to explore movie details, actor details, search for movies and actors, and create personalized favorites lists.
 
 ## Table of Contents
 - [Overview](#overview)
